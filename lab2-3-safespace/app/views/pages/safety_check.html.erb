@@ -1,0 +1,273 @@
+<div class="container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <h1 class="page-title mb-0">Safety Check</h1>
+    <div class="clock-box"><i class="bi bi-clock"></i> <span id="clock">Loading time...</span></div>
+  </div>
+  <p class="text-muted mt-3" id="greeting"></p>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card shadow-sm"><div class="card-body p-4">
+        <h2 class="h5 mb-3"><i class="bi bi-clipboard-check text-danger"></i> Quick Risk Self-Assessment</h2>
+        <form id="safetyForm" novalidate>
+          <div class="mb-3">
+            <label for="nickname" class="form-label">Nickname (optional)</label>
+            <input type="text" id="nickname" class="form-control" placeholder="e.g. Aina">
+          </div>
+          <div class="mb-3">
+            <label for="incidentDate" class="form-label">Date of the latest incident</label>
+            <input type="date" id="incidentDate" class="form-control">
+          </div>
+          <p class="form-label mb-2">Tick anything that has happened to you:</p>
+          <div class="form-check"><input class="form-check-input q" type="checkbox" value="3" id="q1"><label class="form-check-label" for="q1">I have been hit, pushed or physically hurt</label></div>
+          <div class="form-check"><input class="form-check-input q" type="checkbox" value="2" id="q2"><label class="form-check-label" for="q2">I have been threatened or made to feel afraid</label></div>
+          <div class="form-check"><input class="form-check-input q" type="checkbox" value="2" id="q3"><label class="form-check-label" for="q3">My phone, money or movements are controlled</label></div>
+          <div class="form-check"><input class="form-check-input q" type="checkbox" value="1" id="q4"><label class="form-check-label" for="q4">I am kept away from family or friends</label></div>
+          <div class="form-check"><input class="form-check-input q" type="checkbox" value="3" id="q5"><label class="form-check-label" for="q5">I have been forced into unwanted sexual acts</label></div>
+          <div class="form-check"><input class="form-check-input q" type="checkbox" value="3" id="q6"><label class="form-check-label" for="q6">The threats or violence are getting worse</label></div>
+          <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-danger">Check My Safety</button>
+            <button type="reset" class="btn btn-outline-danger" id="resetBtn">Clear</button>
+          </div>
+          <p id="formError" class="text-danger small mt-2"></p>
+        </form>
+      </div></div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card shadow-sm h-100"><div class="card-body p-4">
+        <h2 class="h5 mb-3"><i class="bi bi-bar-chart text-danger"></i> Your Result</h2>
+        <div id="result" class="text-muted">Fill in the form to see your result here.</div>
+        <button class="btn btn-outline-danger mt-3 d-none" id="reportBtn"><i class="bi bi-printer"></i> Open Printable Report</button>
+      </div></div>
+    </div>
+  </div>
+  <p class="small text-muted mt-4"><i class="bi bi-info-circle"></i> This check is for awareness only. Nothing you enter is saved or sent anywhere.</p>
+</div>
+
+<dialog id="safetyDialog" class="safety-dialog">
+  <h2 class="h5"><i class="bi bi-shield-fill-check text-danger"></i> Your safety matters</h2>
+  <p id="dialogText"></p>
+  <div class="d-flex flex-wrap gap-2">
+    <a href="tel:999" class="btn btn-danger"><i class="bi bi-telephone-fill"></i> Call 999</a>
+    <a href="tel:15999" class="btn btn-outline-danger">Talian Kasih 15999</a>
+    <button type="button" class="btn btn-light" id="closeDialog">Close</button>
+  </div>
+</dialog>
+
+<script>
+  // ===== Date & time: live Malaysia clock (event loop: setInterval every 1 second) =====
+  function updateClock() {
+    const now = new Date();
+    document.getElementById("clock").innerHTML =
+      now.toLocaleString("en-MY", { timeZone: "Asia/Kuala_Lumpur", dateStyle: "full", timeStyle: "medium" });
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ===== Greeting based on the hour (if / else if / else) =====
+  const hour = new Date().getHours();
+  let greeting;
+  if (hour < 12) {
+    greeting = "Good morning";
+  } else if (hour < 18) {
+    greeting = "Good afternoon";
+  } else {
+    greeting = "Good evening";
+  }
+  document.getElementById("greeting").innerHTML = greeting + ". This private check helps you understand your level of risk.";
+
+  // ===== Event loop demo (see the order in the console) =====
+  console.log("1. Script started (synchronous code)");
+  setTimeout(() => console.log("3. setTimeout callback (macrotask queue)"), 0);
+  Promise.resolve().then(() => console.log("2. Promise callback (microtask queue)"));
+</script>
+
+<script>
+  const form = document.getElementById("safetyForm");
+  const dialog = document.getElementById("safetyDialog");
+  let lastReport = null;
+
+  // Promise + setTimeout = a pause that does not freeze the page (event loop)
+  const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const nickname = document.getElementById("nickname").value.trim() || "Friend";
+    const dateValue = document.getElementById("incidentDate").value;
+    const checked = document.querySelectorAll(".q:checked");
+    const error = document.getElementById("formError");
+
+    // Validation with logical operators
+    if (dateValue === "" && checked.length === 0) {
+      error.innerHTML = "Please choose a date or tick at least one statement.";
+      return;
+    }
+    error.innerHTML = "";
+
+    // Score: for loop + arithmetic operator
+    let score = 0;
+    const answers = [];
+    for (let i = 0; i < checked.length; i++) {
+      score += Number(checked[i].value);
+      answers.push(checked[i].nextElementSibling.textContent);
+    }
+
+    // Date handling: days since the incident
+    let daysAgo = null;
+    if (dateValue !== "") {
+      const diff = new Date() - new Date(dateValue);
+      daysAgo = Math.floor(diff / (1000 * 60 * 60 * 24));
+      if (daysAgo < 0) {
+        error.innerHTML = "The incident date cannot be in the future.";
+        return;
+      }
+    }
+
+    // Risk level: switch statement
+    let level, advice, color;
+    switch (true) {
+      case score >= 7:
+        level = "High"; color = "danger";
+        advice = "You may be in serious danger. Call 999 now if you are not safe, or Talian Kasih 15999.";
+        break;
+      case score >= 3:
+        level = "Medium"; color = "warning";
+        advice = "Please talk to someone you trust and contact Women's Aid Organisation at 03-3000 8858.";
+        break;
+      case score > 0:
+        level = "Low"; color = "info";
+        advice = "Keep watching for warning signs. Support is available any time at 15999.";
+        break;
+      default:
+        level = "No signs ticked"; color = "success";
+        advice = "No warning signs ticked. You can still read the What Is page to learn more.";
+    }
+
+    // Loading state, then wait 1.5 seconds
+    const result = document.getElementById("result");
+    result.innerHTML = '<div class="spinner-border spinner-border-sm text-danger"></div> Checking your answers...';
+    await wait(1500);
+
+    // OUTPUT 1: innerHTML
+    const recent = (daysAgo !== null && daysAgo <= 3) ? " (very recent)" : "";
+    result.innerHTML = `
+      <span class="badge text-bg-${color} fs-6 mb-2">Risk: ${level}</span>
+      <p class="mb-1"><b>Name:</b> ${escapeHtml(nickname)}</p>
+      <p class="mb-1"><b>Score:</b> ${score} / 14</p>
+      <p class="mb-1"><b>Last incident:</b> ${daysAgo === null ? "Not given" : daysAgo + " day(s) ago" + recent}</p>
+      <p class="mt-2 mb-0">${advice}</p>`;
+    document.getElementById("reportBtn").classList.remove("d-none");
+
+    // OUTPUT 2: console
+    console.log("Safety check submitted at", new Date().toLocaleTimeString("en-MY"));
+    console.table(answers.map((a, n) => ({ No: n + 1, Statement: a })));
+    console.log(`Score: ${score}, Risk level: ${level}`);
+
+    await wait(100); // let the browser paint the result card before the alert blocks the page
+    // OUTPUT 3: window.alert()
+    window.alert("Hi " + nickname + ", your risk level is: " + level + ".\nScore: " + score + " / 14");
+
+    // POP-UP DIALOG for medium or high risk
+    if (level === "High" || level === "Medium") {
+      document.getElementById("dialogText").innerHTML = advice;
+      dialog.showModal();
+    }
+
+    lastReport = { nickname, level, score, answers, advice };
+  });
+
+  document.getElementById("closeDialog").addEventListener("click", () => dialog.close());
+
+  // OUTPUT 4: document.write() into a new report window
+  document.getElementById("reportBtn").addEventListener("click", function () {
+    if (!lastReport) return;
+    const w = window.open("", "_blank", "width=600,height=700");
+    w.document.write("<html><head><title>SafeSpace Report</title></head><body style='font-family:Arial;padding:24px'>");
+    w.document.write("<h1 style='color:#6B2FA0'>SafeSpace Malaysia - Safety Report</h1>");
+    w.document.write("<p>Generated: " + new Date().toLocaleString("en-MY") + "</p>");
+    w.document.write("<p><b>Name:</b> " + escapeHtml(lastReport.nickname) + "</p>");
+    w.document.write("<p><b>Risk level:</b> " + lastReport.level + " (score " + lastReport.score + " / 14)</p>");
+    w.document.write("<h3>Statements ticked</h3><ul>");
+    for (const a of lastReport.answers) {
+      w.document.write("<li>" + a + "</li>");
+    }
+    if (lastReport.answers.length === 0) w.document.write("<li>None</li>");
+    w.document.write("</ul><p>" + lastReport.advice + "</p>");
+    w.document.write("<p><b>Emergency:</b> 999 &nbsp; <b>Talian Kasih:</b> 15999</p></body></html>");
+    w.document.close();
+  });
+
+  // Clear button also clears the result
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    document.getElementById("result").innerHTML = "Fill in the form to see your result here.";
+    document.getElementById("reportBtn").classList.add("d-none");
+    document.getElementById("formError").innerHTML = "";
+    lastReport = null;
+  });
+
+  // Stops HTML being injected through the nickname field
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+</script>
+
+<!-- ===== Vue.js section: Find a Hotline ===== -->
+<div class="container pb-5" id="vueApp" v-cloak>
+  <div class="card shadow-sm"><div class="card-body p-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <h2 class="h5 mb-0"><i class="bi bi-search text-danger"></i> Find a Hotline <span class="badge vue-badge">Vue.js</span></h2>
+      <span class="small text-muted">Showing {{ filtered.length }} of {{ hotlines.length }}</span>
+    </div>
+    <input v-model="search" class="form-control mb-3" placeholder="Search by name or number, e.g. WAO">
+    <div class="d-flex flex-wrap gap-2 mb-3">
+      <button v-for="c in categories" :key="c" type="button" class="btn btn-sm"
+              :class="category === c ? 'btn-danger' : 'btn-outline-danger'" @click="category = c">{{ c }}</button>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4" v-for="h in filtered" :key="h.number">
+        <a :href="'tel:' + h.tel" class="vue-hotline d-block h-100">
+          <div class="fw-bold fs-5">{{ h.number }}</div>
+          <div>{{ h.name }}</div>
+          <div class="small text-muted">{{ h.type }}</div>
+        </a>
+      </div>
+    </div>
+    <p v-if="filtered.length === 0" class="text-muted mt-3 mb-0">No hotline matches "{{ search }}". In an emergency, call 999.</p>
+  </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@3.4.38/dist/vue.global.prod.js"></script>
+<script>
+  // Vue 3: reactive data, computed property, watcher and lifecycle hook
+  Vue.createApp({
+    data() {
+      return {
+        search: "",
+        category: "All",
+        categories: ["All", "Emergency", "Support"],
+        hotlines: [
+          { number: "999", tel: "999", name: "MERS 999 (Police, Ambulance)", type: "Emergency" },
+          { number: "15999", tel: "15999", name: "Talian Kasih", type: "Emergency" },
+          { number: "019-261 5999", tel: "0192615999", name: "Talian Kasih WhatsApp", type: "Emergency" },
+          { number: "03-3000 8858", tel: "0330008858", name: "Women's Aid Organisation (WAO)", type: "Support" },
+          { number: "018-988 8058", tel: "0189888058", name: "WAO TINA (WhatsApp)", type: "Support" },
+          { number: "03-7627 2929", tel: "0376272929", name: "Befrienders KL", type: "Support" }
+        ]
+      };
+    },
+    computed: {
+      filtered() {
+        const q = this.search.toLowerCase().trim();
+        return this.hotlines.filter(h =>
+          (h.name.toLowerCase().includes(q) || h.number.includes(q)) &&
+          (this.category === "All" || h.type === this.category));
+      }
+    },
+    watch: {
+      search(value) { console.log("Vue search:", value, "->", this.filtered.length, "result(s)"); }
+    },
+    mounted() { console.log("Vue app mounted, version " + Vue.version); }
+  }).mount("#vueApp");
+</script>

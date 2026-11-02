@@ -1,0 +1,53 @@
+<section class="hero text-white py-5">
+  <div class="container py-4">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7 text-center text-lg-start">
+        <span class="badge rounded-pill hero-badge mb-3"><i class="bi bi-heart-fill"></i> Purple is the colour of DV awareness</span>
+        <h1 class="display-4 fw-bold">You Are Not Alone</h1>
+        <p class="lead mb-4">Information and support for victims of domestic violence and gender-based violence in Malaysia.</p>
+        <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start">
+          <a href="tel:999" class="btn btn-light btn-lg"><i class="bi bi-telephone-fill"></i> Emergency 999</a>
+          <a href="tel:15999" class="btn btn-outline-light btn-lg"><i class="bi bi-headset"></i> Talian Kasih 15999</a>
+        </div>
+      </div>
+      <div class="col-lg-5 text-center d-none d-md-block">
+        <div class="hero-icon mx-auto"><i class="bi bi-shield-fill-check"></i></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="container py-5">
+  <h2 class="text-center fw-bold mb-1">How can we help?</h2>
+  <p class="text-center text-muted mb-4">Choose a section below.</p>
+  <div class="row g-4">
+    <% @sections.each do |s| %>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm feature-card">
+          <div class="card-body">
+            <i class="bi <%= s[:icon] %> fs-1 text-danger"></i>
+            <h3 class="h5 mt-3"><%= s[:title] %></h3>
+            <p class="text-muted"><%= s[:text] %></p>
+            <%= link_to "Learn more", s[:path], class: "btn btn-outline-danger" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <h2 class="text-center fw-bold mb-4">3 Steps to Get Help</h2>
+  <div class="row g-4">
+    <% [["Call for help", "Call 999 in an emergency, or Talian Kasih 15999 for support."],
+        ["Make a report", "Lodge a police report, or get care at a hospital One Stop Crisis Centre."],
+        ["Get protected", "Apply for a protection order through JKM or the court."]].each_with_index do |(title, text), i| %>
+      <div class="col-md-4">
+        <div class="step-box">
+          <div class="step-num mb-3"><%= i + 1 %></div>
+          <h3 class="h5"><%= title %></h3>
+          <p class="text-muted mb-0"><%= text %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

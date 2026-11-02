@@ -1,0 +1,45 @@
+<div class="container py-4">
+  <h1 class="page-title">What Is Domestic & Gender-Based Violence?</h1>
+
+  <div class="row g-4 mt-1">
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm"><div class="card-body">
+        <h2 class="h4 text-danger"><i class="bi bi-house-exclamation"></i> Domestic Violence</h2>
+        <p>Abuse by a spouse, former spouse, family member or someone living in the same home. In Malaysia it is covered by the Domestic Violence Act 1994.</p>
+      </div></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm"><div class="card-body">
+        <h2 class="h4 text-danger"><i class="bi bi-gender-ambiguous"></i> Gender-Based Violence</h2>
+        <p>Harm directed at a person because of their gender, including sexual harassment, stalking, sexual assault and abuse, in any setting.</p>
+      </div></div>
+    </div>
+  </div>
+
+  <h2 class="h4 mt-5 mb-3">Forms of Abuse</h2>
+  <div class="row g-3">
+    <% [["bi-bandaid", "Physical", "Hitting, slapping, choking or using weapons."],
+        ["bi-emoji-frown", "Emotional", "Insults, threats, humiliation and constant control."],
+        ["bi-exclamation-octagon", "Sexual", "Any unwanted sexual act or pressure."],
+        ["bi-cash-coin", "Financial", "Controlling money or stopping someone from working."],
+        ["bi-person-x", "Social Isolation", "Cutting the victim off from family and friends."]].each do |icon, title, text| %>
+      <div class="col-6 col-lg">
+        <div class="type-box text-center p-3 h-100">
+          <i class="bi <%= icon %> fs-2 text-danger"></i>
+          <h3 class="h6 mt-2"><%= title %></h3>
+          <p class="small text-muted mb-0"><%= text %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="alert alert-warning mt-5">
+    <h2 class="h5"><i class="bi bi-eye"></i> Warning Signs</h2>
+    <ul class="mb-0">
+      <li>Unexplained injuries or frequent "accidents"</li>
+      <li>Fear of a partner or family member</li>
+      <li>Withdrawal from friends, work or studies</li>
+      <li>Partner checks their phone, money or movements</li>
+    </ul>
+  </div>
+</div>

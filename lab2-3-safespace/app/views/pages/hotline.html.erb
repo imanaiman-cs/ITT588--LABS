@@ -1,0 +1,16 @@
+<div class="container py-4">
+  <h1 class="page-title">Hotlines</h1>
+  <p class="text-muted">Tap a card to call directly from your phone.</p>
+  <div class="row g-4">
+    <% @hotlines.each_with_index do |h, i| %>
+      <div class="col-12 col-md-6 col-lg-4">
+        <a href="tel:<%= h[:number].delete(' -') %>" class="hotline-card <%= 'hotline-urgent' if i == 0 %> d-block h-100 text-decoration-none">
+          <i class="bi bi-telephone-fill"></i>
+          <div class="hotline-number"><%= h[:number] %></div>
+          <div class="hotline-name"><%= h[:name] %></div>
+          <div class="hotline-desc"><%= h[:desc] %></div>
+        </a>
+      </div>
+    <% end %>
+  </div>
+</div>

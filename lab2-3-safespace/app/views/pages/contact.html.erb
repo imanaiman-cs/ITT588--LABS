@@ -1,0 +1,38 @@
+<div class="container py-4">
+  <h1 class="page-title">Contact Us</h1>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card shadow-sm"><div class="card-body p-4">
+        <h2 class="h5 mb-3">Send a Message</h2>
+        <%= form_with url: contact_path, method: :post do |f| %>
+          <div class="mb-3">
+            <%= f.label :name, "Name", class: "form-label" %>
+            <%= f.text_field :name, class: "form-control", placeholder: "Your name" %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :email, "Email", class: "form-label" %>
+            <%= f.text_field :email, class: "form-control", placeholder: "name@example.com" %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :message, "Message", class: "form-label" %>
+            <%= f.text_area :message, rows: 4, class: "form-control", placeholder: "How can we help?" %>
+          </div>
+          <%= f.submit "Send Message", class: "btn btn-danger" %>
+        <% end %>
+      </div></div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card shadow-sm h-100"><div class="card-body p-4">
+        <h2 class="h5 mb-3">Support Organisations</h2>
+        <p class="mb-2"><i class="bi bi-building text-danger"></i> <b>Women's Aid Organisation (WAO)</b><br>
+          <a href="tel:0330008858">03-3000 8858</a></p>
+        <p class="mb-2"><i class="bi bi-building text-danger"></i> <b>Talian Kasih, KPWKM</b><br>
+          <a href="tel:15999">15999</a></p>
+        <p class="mb-0"><i class="bi bi-hospital text-danger"></i> <b>One Stop Crisis Centre</b><br>
+          Emergency department of any government hospital</p>
+      </div></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="container py-4">
+  <h1 class="page-title">Law Enforcement in Malaysia</h1>
+  <p class="text-muted">Key laws that protect victims of domestic and gender-based violence.</p>
+
+  <div class="accordion shadow-sm" id="lawAccordion">
+    <% [["Domestic Violence Act 1994 (Act 521)", "Defines domestic violence and allows victims to obtain an Interim Protection Order (IPO) and a Protection Order (PO) from the court. The 2017 amendment added the Emergency Protection Order (EPO), issued by a social welfare officer and valid for 7 days."],
+        ["Penal Code (Act 574)", "Covers criminal acts such as causing hurt, criminal intimidation, rape and outrage of modesty. Section 507A (added in 2023) makes stalking an offence."],
+        ["Anti-Sexual Harassment Act 2022 (Act 840)", "Gives victims of sexual harassment the right to file a complaint with the Tribunal for Anti-Sexual Harassment, which can award compensation and order an apology."],
+        ["Child Act 2001 (Act 611)", "Protects children from abuse and neglect, and requires certain professionals to report suspected child abuse."],
+        ["Sexual Offences Against Children Act 2017 (Act 792)", "Criminalises child grooming, child sexual abuse material and sexual assault against children."]].each_with_index do |(title, body), i| %>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button <%= 'collapsed' unless i == 0 %>" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#law<%= i %>">
+            <i class="bi bi-journal-text me-2 text-danger"></i> <%= title %>
+          </button>
+        </h2>
+        <div id="law<%= i %>" class="accordion-collapse collapse <%= 'show' if i == 0 %>" data-bs-parent="#lawAccordion">
+          <div class="accordion-body"><%= body %></div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
